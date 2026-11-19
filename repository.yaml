@@ -1,5 +1,5 @@
 name: Suivi des dossiers
-maintainer: VotreNomOuPseudo
+maintainer: Nosimandimby
 type: github
-location: https://github.com/VotreNomOuPseudo/suivi-dossiers-hass-addon
-version: "1.0.1"
+location: https://github.com/Nosimandimby/ha-suivi-dossier
+version: "1.2.0"
