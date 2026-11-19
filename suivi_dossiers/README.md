@@ -18,26 +18,34 @@ propre base SQLite persistante.
 
 ---
 
-## 2. Contenu du dossier
+## 2. Structure du projet
+
+Pour que Home Assistant détecte l'add-on (soit en local, soit via un dépôt GitHub),
+le dossier doit respecter **cette structure exacte** :
 
 ```
-hass-addon/
-├── config.yaml          # Configuration de l'add-on (nom, version, options, ingress)
-├── Dockerfile           # Construction de l'image (Python 3.13 Alpine)
-├── run.sh               # Script de démarrage (lit /data/options.json)
-├── DOCS.md              # Documentation embarquée dans Home Assistant
-├── README.md            # Ce fichier
-├── icon.png
-├── logo.png
-├── repository.yaml      # Métadonnées du dépôt d'add-ons (méthode B)
-└── app/                 # Code source de l'application
-    ├── main.py          # Backend FastAPI
-    ├── database.py      # Schéma SQLite et règles métier
-    ├── seed.py          # Données de démonstration
-    ├── chemins.py       # Résolution des chemins
-    ├── requirements.txt
-    └── static/          # Interface HTML / CSS / JS
+suivi-dossiers-hass-addon/         ← racine de votre dépôt GitHub
+├── repository.yaml                ← Métadonnées du dépôt (obligatoire pour méthode B)
+└── suivi_dossiers/                ← Dossier de l'add-on (slug = suivi_dossiers)
+    ├── config.yaml                # Configuration de l'add-on
+    ├── Dockerfile                 # Construction de l'image (Python 3.13 Alpine)
+    ├── run.sh                     # Script de démarrage
+    ├── DOCS.md                    # Documentation embarquée
+    ├── README.md                  # Ce fichier
+    ├── icon.png
+    ├── logo.png
+    ├── synchroniser-addon.sh      # Script de synchronisation du code
+    └── app/                       # Code source de l'application
+        ├── main.py                # Backend FastAPI
+        ├── database.py            # Schéma SQLite et règles métier
+        ├── seed.py                # Données de démonstration
+        ├── chemins.py             # Résolution des chemins
+        ├── requirements.txt
+        └── static/                # Interface HTML / CSS / JS
 ```
+
+> **Important** : Le nom du dossier de l'add-on **doit être `suivi_dossiers`** (le slug
+> défini dans `config.yaml`). Tout autre nom fera échouer la détection par Home Assistant.
 
 ---
 
@@ -48,12 +56,12 @@ hass-addon/
 1. **Activer le mode avancé**  
    Profil (en bas de la barre latérale) → onglet **Mode avancé** → activer.
 
-2. **Copier le dossier dans `/addons`**  
-   Via **Samba share** : copiez le dossier `hass-addon` dans le partage `addons`.  
+2. **Copier le dossier `suivi_dossiers/` dans `/addons`**  
+   Via **Samba share** : copiez le dossier `suivi_dossiers` dans le partage `addons`.  
    Via **Advanced SSH & Web Terminal** :
    ```bash
    ls /addons          # vérifier que le dossier n'existe pas déjà
-   # copier le dossier ici
+   # copier le dossier suivi_dossiers ici
    ```
 
    Le fichier suivant doit exister :
@@ -77,23 +85,37 @@ hass-addon/
    Onglet **Démarrer** → **Démarrer**. L'entrée **Dossiers** apparaît dans la
    barre latérale de Home Assistant.
 
-### Méthode B — dépôt d'add-ons (mises à jour automatiques)
+### Méthode B — dépôt d'add-ons GitHub (mises à jour automatiques)
 
-1. Publiez ce dossier sur GitHub / Gitea / GitLab avec la structure suivante :
-   ```
-   repository.yaml
-   suivi_dossiers/
-       config.yaml
-       Dockerfile
-       run.sh
-       ...
-   ```
-2. Dans Home Assistant : **Paramètres → Modules complémentaires → Boutique →
-   ⋮ → Dépôts** → ajoutez l'URL du dépôt.
-3. Installez puis démarrez l'add-on comme en méthode A.
+1. **Préparez le dépôt GitHub**  
+   Créez un dépôt (ex: `suivi-dossiers-hass-addon`) avec la structure
+   montrée ci-dessus. Assurez-vous que :
+   - `repository.yaml` est à la **racine du dépôt**
+   - `suivi_dossiers/` est un **sous-dossier** à la racine
 
-Pour proposer une mise à jour, incrémentez `version:` dans `config.yaml`
-(par exemple `1.0.1` → `1.0.2`) avant de publier.
+2. **Éditez `repository.yaml`** à la racine avec vos informations :
+   ```yaml
+   name: Suivi des dossiers
+   maintainer: VotrePseudoGitHub
+   type: github
+   location: https://github.com/VotrePseudoGitHub/suivi-dossiers-hass-addon
+   version: "1.0.1"
+   ```
+   Remplacez `VotrePseudoGitHub` par votre nom d'utilisateur GitHub réel.
+
+3. **Ajoutez le dépôt dans Home Assistant**  
+   - **Paramètres → Modules complémentaires → Boutique → ⋮ → Dépôts**
+   - Collez l'URL de votre dépôt GitHub (ex: `https://github.com/Vous/suivi-dossiers-hass-addon`)
+   - Cliquez sur **Ajouter**
+
+4. **Installez l'add-on**  
+   La section de votre dépôt apparaît dans la boutique. Installez **Suivi des dossiers**
+   comme en méthode A.
+
+5. **Mises à jour futures**  
+   - Modifiez le code, incrémentez `version:` dans `config.yaml` (ex: `1.0.1` → `1.0.2`)
+   - `git commit && git push`
+   - Dans Home Assistant : Boutique → ⋮ → **Vérifier les mises à jour** → **Mettre à jour**
 
 ---
 
@@ -149,6 +171,21 @@ l'application. Redémarrez l'add-on après modification.
 | Échec du build (`ghcr.io` / PyPI injoignable) | Problème réseau ou DNS | Autoriser `ghcr.io` et `files.pythonhosted.org` |
 | L'add-on démarre puis s'arrête | Port déjà utilisé ou `/data` non inscriptible | Consulter l'onglet **Journaux** |
 | La base de démonstration remplace mes données | `/data/dossiers.db` existait déjà | Restaurer une sauvegarde ou réinstaller proprement |
+| Dépôt GitHub non détecté | `repository.yaml` manquant ou mal placé | Vérifier structure : `repository.yaml` à la racine + `suivi_dossiers/` en dessous |
 
 Pour plus de détails, consultez le guide complet
 [`INSTALLATION-HA.md`](./INSTALLATION-HA.md).
+
+---
+
+## 8. Synchronisation du code (développement)
+
+Le script `synchroniser-addon.sh` copie le code depuis la racine du projet vers
+l'add-on. **Exécutez-le depuis la racine du projet** (là où se trouvent
+`main.py`, `database.py`, etc.) après chaque modification :
+
+```bash
+./hass-addon/suivi_dossiers/synchroniser-addon.sh
+```
+
+Cela met à jour `hass-addon/suivi_dossiers/app/` avant de publier / installer.

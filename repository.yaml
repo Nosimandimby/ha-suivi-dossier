@@ -1,2 +1,5 @@
-name: Dépôt d'add-ons - Suivi des dossiers
-maintainer: Suivi des dossiers
+name: Suivi des dossiers
+maintainer: VotreNomOuPseudo
+type: github
+location: https://github.com/VotreNomOuPseudo/suivi-dossiers-hass-addon
+version: "1.0.1"

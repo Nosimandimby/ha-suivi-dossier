@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# Recopie le code de l'application dans hass-addon/app/.
+# Recopie le code de l'application dans hass-addon/suivi_dossiers/app/.
 #
 # Home Assistant ne transmet au moteur de construction Docker que le dossier de
 # l'add-on : les fichiers de l'application doivent donc y être présents. Lancez
-# ce script après toute modification du code, avant de publier / installer.
+# ce script depuis la racine du projet après toute modification du code,
+# avant de publier / installer l'add-on.
 set -euo pipefail
-cd "$(dirname "$0")"
 
-DEST="app"
+# Ce script doit être exécuté depuis la racine du projet (là où se trouvent
+# main.py, database.py, etc.)
+DEST="hass-addon/suivi_dossiers/app"
 
 rm -rf "$DEST"
 mkdir -p "$DEST"
