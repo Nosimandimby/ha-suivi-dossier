@@ -153,6 +153,23 @@ La base `/data/dossiers.db` est conservée pendant la mise à jour.
 Ouvrez **Dossiers** dans la barre latérale → page de connexion de
 l'application → **admin** / **admin**.
 
+
+### Port de l'add-on
+
+L'add-on écoute par défaut sur le port interne `8000` (utilisé par l'ingress
+Home Assistant). Vous pouvez changer ce port avec l'option **`port`** dans le
+panneau de configuration de l'add-on (`/data/options.json`). Par exemple :
+
+```json
+{
+  "port": 9000
+}
+```
+
+Cette valeur est lue au démarrage par `run.sh` et passée à l'application via
+la variable d'environnement `PORT`. Redémarrez l'add-on après toute
+modification.
+
 Puis, immédiatement : onglet **Utilisateurs** → modifier `admin` → nouveau mot
 de passe. Le compte de démonstration reste sinon actif pour tout utilisateur
 ayant accès à Home Assistant.
@@ -213,7 +230,7 @@ en l'état de la sauvegarde.
 ## Vérifications finales (checklist)
 
 - [ ] La boutique affiche l'add-on dans **Modules complémentaires locaux**
-- [ ] La version affichée est `1.0.0`
+- [ ] La version affichée est `1.0.1`
 - [ ] L'onglet **Journaux** ne contient aucun `Traceback`
 - [ ] `[INFO] Base de données : /data/dossiers.db` apparaît au démarrage
 - [ ] L'entrée **Dossiers** est présente dans la barre latérale

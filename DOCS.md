@@ -37,6 +37,9 @@ Assistant sous le nom **Dossiers** (ou via *Paramètres → Modules complémenta
 
 - L'add-on sert l'interface sur le port interne `8000` (ingress Home Assistant) ;
   aucun port n'est publié sur le réseau par défaut.
+- Une option **`port`** peut être ajoutée dans `/data/options.json` (par exemple
+  `{"port": 9000}`) pour préciser le port d'écoute du serveur FastAPI. Elle est
+  lue par `run.sh` qui exporte `PORT` avant le démarrage de l'application.
 - Aucune connexion à l'extérieur n'est nécessaire : l'application est
   entièrement autonome une fois installée.
 - Architectures prises en charge : `amd64` (PC, NUC, VM) et `aarch64`

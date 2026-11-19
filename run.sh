@@ -6,7 +6,13 @@ set -euo pipefail
 
 export DOSSIER_DATA_DIR="/data"
 export HOST="0.0.0.0"
-export PORT="${PORT:-8000}"
+
+# Lecture de l'option « port » définie dans l'interface de l'add-on.
+if [ -f /data/options.json ]; then
+    export PORT=$(python3 -c "import json; print(json.load(open('/data/options.json')).get('port', 8000))")
+else
+    export PORT="8000"
+fi
 
 mkdir -p "$DOSSIER_DATA_DIR"
 
@@ -19,6 +25,7 @@ fi
 
 echo "[INFO] Suivi des dossiers - démarrage"
 echo "[INFO] Base de données : ${DOSSIER_DATA_DIR}/dossiers.db"
+echo "[INFO] Port : ${PORT}"
 
 cd /app
 exec python3 /app/main.py

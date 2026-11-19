@@ -1,6 +1,6 @@
 # Suivi des dossiers
 name: Suivi des dossiers
-version: "1.0.0"
+version: "1.0.1"
 slug: suivi_dossiers
 description: Suivi et gestion des dossiers administratifs (accusés, retraits, visas) avec base SQLite persistante
 arch:
@@ -18,11 +18,6 @@ map:
   - type: share
     read_only: true
 options:
-  port:
-    type: text
-    name: Port d'exposition
-    description: Port sur lequel l'application sera accessible (exposé via ingress)
-    default: "8000"
-environment:
-  - name: PORT
-    value: "{{ options.port }}"
+  port: 8000
+schema:
+  port: port
